@@ -80,7 +80,7 @@ public class View extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				actions.action_import(table,tm);
+				actions.action_import(tm);
 			}
 		});
 		
@@ -89,7 +89,7 @@ public class View extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				actions.action_export();
+				actions.action_export(tm);
 			}
 		});
 		
@@ -127,6 +127,7 @@ public class View extends JFrame{
 					"ÐòºÅ","Ñ§ºÅ","ÐÕÃû","³É¼¨"
 	});
 	private JTable table;
+	@SuppressWarnings("rawtypes")
 	void init_table(){
 		for(int i =0;i<10;i++){
 			tm.addRow((Vector)null);

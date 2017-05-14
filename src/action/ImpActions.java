@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -19,7 +20,7 @@ import org.junit.Test;
 public class ImpActions implements Actions {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void action_import(JTable table,DefaultTableModel tm) {
+	public void action_import(DefaultTableModel tm) {
 		// TODO Auto-generated method stub
 		JFileChooser jfc = new JFileChooser();
 		jfc.showSaveDialog(null);
@@ -61,6 +62,9 @@ public class ImpActions implements Actions {
 				tm.setValueAt(i, count, 3);
 				count++;
 			}
+			for(int i = 0;i<tm.getRowCount();i++){
+				tm.setValueAt(new Integer(i), i, 0);
+			}
 			reader.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -69,11 +73,27 @@ public class ImpActions implements Actions {
 	}
 	
 	@Override
-	public void action_export() {
+	public void action_export(DefaultTableModel tm) {
 		// TODO Auto-generated method stub
 		JFileChooser jfc = new JFileChooser();
-		jfc.showOpenDialog(null);
+		jfc.showSaveDialog(null);
 		File file = jfc.getSelectedFile();	
+		try {
+			FileWriter fw = new FileWriter(file,true);
+			for(int i = 0;i<tm.getRowCount();i++){
+				for(int j = 1;j<=3;j++){
+					if(tm.getValueAt(i, j) == null){
+						fw.write("null");
+					}
+					fw.write((String)tm.getValueAt(i, j)+"\r\n");
+				}
+			}
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
