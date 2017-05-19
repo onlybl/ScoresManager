@@ -57,9 +57,31 @@ public class View extends JFrame{
 		jmb.add(me_search);
 		jmb.add(me_help);
 		me_file.add(jmi_open);
+		jmi_open.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				actions.action_import(tm);
+			}
+			
+		});
 		me_file.add(jmi_export);
+		jmi_export.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				actions.action_export(tm);
+			}
+		});
 		me_edit.add(jmi_modify);
 		me_search.add(jmi_search);
+		jmi_search.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				actions.action_search(tm);
+			}
+		});
 		me_search.add(jmi_statistics);
 		me_help.add(jmi_instruction);
 		me_help.add(jmi_about);
@@ -98,7 +120,7 @@ public class View extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				actions.action_search();
+				actions.action_search(tm);
 			}
 		});
 		

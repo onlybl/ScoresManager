@@ -1,8 +1,10 @@
 package action;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,65 +13,34 @@ import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import org.junit.Test;
 
+import dao.StudentDao;
+import dao.StudentDaoImp;
+import domain.Student;
+import view.Search;
+import view.View;
+
 public class ImpActions implements Actions {
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	StudentDao studentDaoImp = new StudentDaoImp();
 	@Override
 	public void action_import(DefaultTableModel tm) {
-		// TODO Auto-generated method stub
 		JFileChooser jfc = new JFileChooser();
 		jfc.showSaveDialog(null);
 		File file = jfc.getSelectedFile();
-		try {
-			FileReader fileReader = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fileReader);
-			Vector id = new Vector();
-			Vector name = new Vector();
-			Vector score = new Vector();
-			String item = null;
-			int count=1;
-			while((item = reader.readLine())!=null){
-				if(count%3==0){
-					score.add(item);
-				}
-				else if(count%3==2){
-					name.add(item);
-				}
-				else{
-					id.add(item);
-				}
-				count++;
-			}
-			//根据数据数增加行数
-			tm.setRowCount(id.size()+1);
-			count = 0;
-			for(Object i : id){
-				tm.setValueAt(i, count, 1);
-				count++;
-			}
-			count = 0;
-			for(Object i : name){
-				tm.setValueAt(i, count, 2);
-				count++;
-			}
-			count = 0;
-			for(Object i : score){
-				tm.setValueAt(i, count, 3);
-				count++;
-			}
-			for(int i = 0;i<tm.getRowCount();i++){
-				tm.setValueAt(new Integer(i), i, 0);
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Vector<Student> students = new Vector<>();
+		studentDaoImp.readFromFile(students, file);
+			//信息导出到table
+		studentDaoImp.writeToTable(students, tm);
 	}
 	
 	@Override
@@ -83,7 +54,12 @@ public class ImpActions implements Actions {
 			for(int i = 0;i<tm.getRowCount();i++){
 				for(int j = 1;j<=3;j++){
 					if(tm.getValueAt(i, j) == null){
-						fw.write("null");
+						if(1==j||3==j){
+							fw.write("0");
+						}
+						else{
+							fw.write("null");
+						}
 					}
 					fw.write((String)tm.getValueAt(i, j)+"\r\n");
 				}
@@ -97,20 +73,24 @@ public class ImpActions implements Actions {
 	}
 
 	@Override
-	public void action_sort() {
+	public void action_sort(DefaultTableModel tm) {
 		// TODO Auto-generated method stub
-		
+		Vector<Student> students = new Vector<>();
+		//从表格读取学生信息
+		studentDaoImp.readFromTable(students, tm);
+		//成绩升序排序
+		studentDaoImp.sort(students, "name down");
+		//导出到表格
+		studentDaoImp.writeToTable(students, tm);
 	}
 
 	@Override
-	public void action_search() {
-		// TODO Auto-generated method stub
-		
+	public void action_search(DefaultTableModel tm) {
+		new Search(tm);
 	}
 
 	@Override
 	public void action_modify(JTable table, JButton jb,ImageIcon origin,ImageIcon willing) {
-		// TODO Auto-generated method stub
 		if(table.isEnabled()){
 			table.setEnabled(false);
 			table.clearSelection();
